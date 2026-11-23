@@ -1,0 +1,19 @@
+function doctorPatient(){
+ const p=patient(selectedPatient),rx=rxFor(p.id),logs=patientLogs(p),last=logs[0],st=patientStatus(p);
+ const weekLogs=logs.filter(x=>new Date(x.date)>=weekStart());
+ const goal=rx.length?Math.max(...rx.map(x=>x.perWeek)):5,doneDays=new Set(weekLogs.map(x=>new Date(x.date).toDateString())).size,pct=Math.min(100,Math.round(doneDays/goal*100));
+ return `<div class="page-head"><button class="icon-back" onclick="go('doctorPatients')" aria-label="환자 목록">${icon('back')}</button><b>${esc(p.name)} 환자</b><span></span></div>
+ <section class="card"><div class="flex"><div class="avatar big">${esc(p.name[0])}</div><div class="grow"><div class="flex"><h2 style="margin:0">${esc(p.name)}</h2><span class="status ${statusClass(st)}">${st}</span></div><p class="tiny muted" style="margin:2px 0">만 ${p.age}세 · ${p.sex} · 환자번호 ${p.no}</p><b class="tiny">${esc(p.diagnosis)}</b></div></div>
+  <div class="pt-stats boxed"><div><small class="muted">프로그램</small><b>${p.week}주차<small class="muted"> / ${p.weeks}주</small></b></div><div><small class="muted">이번 주 수행률</small><b>${pct}%</b></div><div><small class="muted">최근 통증</small><b class="${last&&last.after>last.before?'warn-txt':''}">${last?last.after:'–'}<small class="muted"> / 10</small></b></div></div>
+  <div class="two-btn"><button class="btn alt" onclick="go('doctorChat')">${icon('message')} 메시지</button><button class="btn" onclick="go('doctorPrescribe')">${icon('clipboard')} 처방 수정</button></div>
+ </section>
+ <section class="card"><div class="flex between"><div><h2 style="margin:0">통증 변화 추이</h2><p class="tiny muted" style="margin:2px 0 0">운동 전·후 통증 점수</p></div></div>${chart(logs)}</section>
+ <section class="card"><div class="flex between"><div><h2 style="margin:0">이번 주 운동 수행</h2><p class="tiny muted" style="margin:2px 0 0">목표 ${goal}회 중 ${doneDays}회 완료</p></div><span class="big-num teal">${pct}%</span></div><div class="week-dots">${weekDots(logs)}</div><div class="progress"><i style="width:${pct}%"></i></div><p class="tiny muted" style="text-align:right">${doneDays>=goal?'이번 주 목표 달성':'목표까지 '+(goal-doneDays)+'회 남았어요'}</p></section>
+ <section class="card"><div class="flex between"><div><h2 style="margin:0">처방 운동</h2><p class="tiny muted" style="margin:2px 0 0">환자 화면의 '오늘의 운동'에 표시돼요.</p></div><button class="smallbtn" onclick="go('doctorPrescribe')">+ 처방 추가</button></div>
+  ${rx.length?rx.map((r,i)=>`<div class="rx-item"><div class="art sm">${photoOrIcon(ex(r.id))}</div><div class="grow"><b>${esc(ex(r.id).name)}</b><small class="muted">${r.sets}세트 × ${r.reps}회 · 주 ${r.perWeek}회</small>${r.note?`<small>📝 ${esc(r.note)}</small>`:''}</div><button class="icon-btn" onclick="rxRemove(${i})" aria-label="삭제">${icon('trash')}</button></div>`).join(''):'<p class="sub">아직 처방한 운동이 없습니다.</p>'}
+ </section>
+ <section class="card"><div><h2 style="margin:0">최근 운동 기록</h2><p class="tiny muted" style="margin:2px 0 0">환자가 남긴 증상과 메모를 함께 확인하세요.</p></div>
+  ${logs.slice(0,6).map(l=>`<div class="log-row"><div class="flex between"><span class="tiny muted">${dayLabel(l.date)}</span><span class="status ${l.symptoms?.includes('tingling')?'st-red':l.symptoms?.includes('back')?'st-yellow':'st-green'}">${esc(symptomText(l.symptoms))}</span></div><div class="flex between"><div><b>${esc(ex(l.exercise).name)}</b><small class="muted">${l.sets}세트 × ${l.reps}회</small></div><div style="text-align:right"><small class="muted">통증 변화</small><b class="${l.after>l.before?'warn-txt':'teal'}">${l.before} → ${l.after}</b></div></div>${l.memo?`<div class="memo"><small class="muted">환자 메모</small><p>${esc(l.memo)}</p></div>`:''}</div>`).join('')||'<p class="sub">아직 운동 기록이 없습니다.</p>'}
+ </section>`;
+}
+function rxRemove(i){if(!confirm('이 처방을 삭제할까요?'))return;const all=rxLoad();(all[selectedPatient]||[]).splice(i,1);rxSave(all);render()}
