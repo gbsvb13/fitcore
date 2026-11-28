@@ -72,7 +72,7 @@
 | 재로그인 시 기록 사라짐 | `saveRecords()`가 브라우저에만 저장 | DynamoDB 동기화(`fcData.sync`) 추가 |
 
 ## 한계 및 향후 과제
-- 환자/의료진 역할은 화면 선택 방식이며, 실제 권한 분리(Cognito 그룹)는 미구현
+- 의료진 역할은 Cognito DOCTOR 그룹으로 확인함 (아래 "의료진 권한 분리" 참고). 의료진 데이터의 서버 측 접근 규칙은 처방·메시지 DynamoDB 연동 때 추가 예정
 - 의료진 화면의 환자 데이터는 시연용 가상 데이터
 - 처방·메시지는 아직 브라우저에 저장됨 (추후 DynamoDB 연동 필요)
 
@@ -85,3 +85,14 @@
 5. 의료진 운동 배정은 세트 1~10, 반복 1~50, 주간 빈도 1~7 정수만 허용.
 
 **중요:** `amplify/data/resource.ts`에 새 선택형 필드가 추가되었습니다. AWS 연동 상태에서 사용하려면 백엔드 스키마를 배포한 후 새 `amplify_outputs.json`으로 빌드해야 합니다. 브라우저 localStorage에서는 즉시 사용할 수 있으나, 미배포 AWS 환경으로 보내면 새 필드가 저장되지 않을 수 있습니다. 기존 환자-의료진 시연용 처방/메시지 공유 및 서버 측 역할 분리 기능은 이 패치 범위 밖이며, 실제 환자 정보는 사용하지 마세요.
+
+## 의료진 권한 분리 (Cognito DOCTOR 그룹)
+
+- `amplify/auth/resource.ts`에 `DOCTOR` 그룹을 추가했습니다.
+- 의료진으로 로그인하면 로그인 토큰의 `cognito:groups`에 `DOCTOR`가 있는지 확인합니다 (`fcAuth.isDoctor()`). 없으면 로그아웃하고 안내 문구를 보여줍니다.
+- 브라우저 저장값(`fitcore-role`)을 `doctor`로 바꿔도, 페이지를 열 때 그룹을 다시 확인해 환자 화면으로 되돌립니다.
+- 그룹 등록은 사용자가 할 수 없고 관리자가 직접 합니다.
+  - AWS 콘솔: Cognito → 사용자 풀 → 그룹 → `DOCTOR` → 사용자 추가
+  - CLI: `aws cognito-idp admin-add-user-to-group --user-pool-id <user_pool_id> --username <이메일> --group-name DOCTOR`
+- 적용하려면 `npx ampx sandbox`로 백엔드를 다시 배포해야 합니다.
+- 한계: 현재 의료진 화면의 데이터(가상 환자·처방·메시지)는 브라우저에 있으므로, 서버 측 의료진 전용 접근 규칙은 처방·메시지를 DynamoDB로 옮길 때 `allow.groups(['DOCTOR'])`로 추가해야 합니다.

@@ -1,5 +1,5 @@
 import { Amplify } from 'aws-amplify';
-import { signUp, confirmSignUp, resendSignUpCode, signIn, signOut, getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
+import { signUp, confirmSignUp, resendSignUpCode, signIn, signOut, getCurrentUser, fetchUserAttributes, fetchAuthSession } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/data';
 import outputs from '../amplify_outputs.json';
 
@@ -16,7 +16,19 @@ window.fcAuth = {
   signIn: (email, password) => signIn({ username: email, password }),
   signOut: () => signOut(),
   currentUser: () => getCurrentUser(),
-  email: async () => (await fetchUserAttributes()).email
+  email: async () => (await fetchUserAttributes()).email,
+  // 의료진 여부는 브라우저에 저장된 값이 아니라 Cognito 로그인 토큰의 그룹으로 판단한다.
+  // forceRefresh: 관리자가 그룹을 바꾼 뒤에도 최신 토큰으로 확인한다.
+  isDoctor: async () => {
+    try {
+      const { tokens } = await fetchAuthSession({ forceRefresh: true });
+      const groups = tokens?.accessToken?.payload?.['cognito:groups'];
+      return Array.isArray(groups) && groups.includes('DOCTOR');
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
 };
 
 // ---------- 운동 기록 저장 (DynamoDB) ----------
@@ -73,7 +85,16 @@ window.fcData = {
 getCurrentUser()
   .then(async () => {
     window.fcUserEmail = await window.fcAuth.email();
+    window.fcIsDoctor = await window.fcAuth.isDoctor();
     try { await window.fcData.load(); } catch (e) { console.error(e); alert('기록을 불러오지 못했어요.'); }
+    // 브라우저 저장값을 'doctor'로 바꿔도 DOCTOR 그룹이 아니면 환자 화면으로 되돌린다.
+    if (localStorage.getItem('fitcore-role') === 'doctor' && !window.fcIsDoctor) {
+      try { localStorage.setItem('fitcore-role', 'patient'); } catch {}
+      document.body.classList.remove('doctor-mode');
+      if (typeof go === 'function' && !document.body.classList.contains('auth')) go('home');
+      alert('이 계정에는 의료진 권한이 없어 환자 화면으로 이동했어요.');
+      return;
+    }
     if (typeof render === 'function' && !document.body.classList.contains('auth')) render();
   })
   .catch(() => {
