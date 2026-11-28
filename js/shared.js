@@ -79,7 +79,7 @@ function patientAlert(p){
 const RX_KEY='fitcore-rx';
 const RX_DEFAULT={p1:[{id:'bird',sets:3,reps:10,perWeek:5,note:'',date:daysAgo(14)},{id:'bridge',sets:3,reps:12,perWeek:5,note:'',date:daysAgo(14)},{id:'heel',sets:2,reps:10,perWeek:5,note:'다리 저림이 생기면 범위를 줄이세요.',date:daysAgo(14)}],p2:[{id:'bridge',sets:3,reps:12,perWeek:3,note:'',date:daysAgo(10)}]};
 const rxLoad=()=>loadJSON(RX_KEY,RX_DEFAULT);
-const rxSave=all=>saveJSON(RX_KEY,all);
+const rxSave=all=>{const prev=rxLoad(),ok=saveJSON(RX_KEY,all);if(ok)window.fcCloud?.onRxSave(prev,all);return ok};
 const rxFor=id=>rxLoad()[id]||[];
 const rxOf=(pid,exId)=>rxFor(pid).find(r=>r.id===exId);
 
@@ -98,9 +98,9 @@ function msgSend(pid,from,text,exId){
  const all=msgLoad(),t=all[pid]||{unreadDoctor:0,unreadPatient:0,msgs:[]};
  t.msgs.push({from,text,date:stamp(),...(exId?{ex:exId}:{})});
  if(from==='patient')t.unreadDoctor=(t.unreadDoctor||0)+1;else t.unreadPatient=(t.unreadPatient||0)+1;
- all[pid]=t;return msgSave(all);
+ all[pid]=t;const ok=msgSave(all);if(ok)window.fcCloud?.sendMessage(pid,from,text,exId);return ok;
 }
-function msgMarkRead(pid,who){const all=msgLoad();if(!all[pid])return;if(who==='doctor')all[pid].unreadDoctor=0;else all[pid].unreadPatient=0;msgSave(all)}
+function msgMarkRead(pid,who){const all=msgLoad();if(!all[pid])return;const had=who==='doctor'?all[pid].unreadDoctor:all[pid].unreadPatient;if(who==='doctor')all[pid].unreadDoctor=0;else all[pid].unreadPatient=0;msgSave(all);if(had)window.fcCloud?.markRead(pid,who)}
 const unreadForDoctor=()=>PATIENTS.reduce((n,p)=>n+(thread(p.id).unreadDoctor||0),0);
 
 function chatView(pid,me){

@@ -97,6 +97,8 @@ async function enterApp(){
   }
  }
  try{await window.fcData?.load()}catch(e){console.error(e);alert('기록을 불러오지 못했어요.')}
+ // 처방·메시지를 AWS에서 불러온다 (로컬 시연 모드에는 fcCloud가 없어 건너뜀)
+ try{if(window.fcCloud){if(authRole==='doctor')await fcCloud.initDoctor();else await fcCloud.initPatient(authEmail)}}catch(e){console.error(e);alert('처방·메시지를 불러오지 못했어요.')}
  try{localStorage.setItem(ROLE_KEY,authRole)}catch{}
  document.body.classList.remove('auth');
  document.body.classList.toggle('doctor-mode',authRole==='doctor');
@@ -107,6 +109,7 @@ function logout(){
  confirmModal('로그아웃 하시겠어요?','다시 이용하려면 로그인이 필요해요.','로그아웃',async()=>{
   try{await window.fcAuth?.signOut()}catch(e){console.error(e)}
   window.fcData?.clear();
+  window.fcCloud?.reset();
   try{localStorage.removeItem(ROLE_KEY)}catch{}
   authRole=null;authMode='signin';authMsg='';
   document.body.classList.remove('doctor-mode','focus-mode');
