@@ -92,7 +92,8 @@ getCurrentUser()
       try { localStorage.setItem('fitcore-role', 'patient'); } catch {}
       document.body.classList.remove('doctor-mode');
       if (typeof go === 'function' && !document.body.classList.contains('auth')) go('home');
-      alert('이 계정에는 의료진 권한이 없어 환자 화면으로 이동했어요.');
+      // 환자 화면이 먼저 그려진 뒤 안내창을 띄운다.
+      setTimeout(() => alert('이 계정에는 의료진 권한이 없어 환자 화면으로 이동했어요.'), 100);
       return;
     }
     if (typeof render === 'function' && !document.body.classList.contains('auth')) render();
