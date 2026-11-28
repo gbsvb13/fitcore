@@ -103,6 +103,9 @@ async function listModel(model, options = {}) {
 const check = (res) => { if (res?.errors?.length) throw new Error(res.errors[0].message); return res?.data; };
 const cloudFail = (e) => { console.error(e); alert('클라우드에 저장하지 못했어요. 인터넷 연결을 확인해 주세요.'); };
 
+// 데모 환자 이름: 환자 계정으로 로그인하면 바뀌므로, 로그아웃할 때 원래대로 되돌린다.
+const DEMO_NAME = patient(DEMO_PATIENT_ID).name;
+
 window.fcCloud = {
   role: null,
   selfOwner: null,
@@ -132,7 +135,7 @@ window.fcCloud = {
       const pid = 'u:' + pr.id;
       this.pidOwner.set(pid, pr.owner);
       if (!PATIENTS.some((p) => p.id === pid)) {
-        PATIENTS.push({ id: pid, name: pr.displayName || pr.email.split('@')[0], age: '-', sex: '-', no: '실제 계정', diagnosis: '실제 계정 환자', week: 1, weeks: 8, status: '양호', adherence: 0, logs: [], cloud: true });
+        PATIENTS.push({ id: pid, name: (pr.displayName || pr.email.split('@')[0]) + ' (실제 계정)', age: '-', sex: '-', no: '실제 계정', diagnosis: '실제 계정 환자', week: 1, weeks: 8, status: '양호', adherence: 0, logs: [], cloud: true });
       }
     }
     await this.pull();
@@ -224,6 +227,7 @@ window.fcCloud = {
     this.selfOwner = null;
     this.pidOwner = new Map();
     for (let i = PATIENTS.length - 1; i >= 0; i--) if (PATIENTS[i].cloud) PATIENTS.splice(i, 1);
+    patient(DEMO_PATIENT_ID).name = DEMO_NAME;
     localStorage.removeItem(RX_LOCAL);
     localStorage.removeItem(MSG_LOCAL);
   }
