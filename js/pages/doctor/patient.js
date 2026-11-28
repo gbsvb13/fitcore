@@ -1,7 +1,7 @@
 function doctorPatient(){
  const p=patient(selectedPatient),rx=rxFor(p.id),logs=patientLogs(p),last=logs[0],st=patientStatus(p);
  const weekLogs=logs.filter(x=>new Date(x.date)>=weekStart());
- const goal=rx.length?Math.max(...rx.map(x=>x.perWeek)):5,doneDays=new Set(weekLogs.map(x=>new Date(x.date).toDateString())).size,pct=Math.min(100,Math.round(doneDays/goal*100));
+ const goal=rx.length?Math.max(...rx.map(x=>x.perWeek)):5,doneDays=new Set(weekLogs.filter(isCompletedWorkout).map(x=>new Date(x.date).toDateString())).size,pct=Math.min(100,Math.round(doneDays/goal*100));
  return `<div class="page-head"><button class="icon-back" onclick="go('doctorPatients')" aria-label="환자 목록">${icon('back')}</button><b>${esc(p.name)} 환자</b><span></span></div>
  <section class="card"><div class="flex"><div class="avatar big">${esc(p.name[0])}</div><div class="grow"><div class="flex"><h2 style="margin:0">${esc(p.name)}</h2><span class="status ${statusClass(st)}">${st}</span></div><p class="tiny muted" style="margin:2px 0">만 ${p.age}세 · ${p.sex} · 환자번호 ${p.no}</p><b class="tiny">${esc(p.diagnosis)}</b></div></div>
   <div class="pt-stats boxed"><div><small class="muted">프로그램</small><b>${p.week}주차<small class="muted"> / ${p.weeks}주</small></b></div><div><small class="muted">이번 주 수행률</small><b>${pct}%</b></div><div><small class="muted">최근 통증</small><b class="${last&&last.after>last.before?'warn-txt':''}">${last?last.after:'–'}<small class="muted"> / 10</small></b></div></div>

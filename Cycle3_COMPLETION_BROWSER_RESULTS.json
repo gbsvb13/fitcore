@@ -1,0 +1,47 @@
+{
+  "method": "Chromium localhost demo.html, synthetic records",
+  "total": 10,
+  "passed": 10,
+  "results": [
+    {
+      "name": "중단 기록 완료 화면에 다음 운동 안내 없음",
+      "result": "PASS"
+    },
+    {
+      "name": "홈 처방 진행률 중단 0/3",
+      "result": "PASS"
+    },
+    {
+      "name": "홈 주간 달성률 중단 0/5",
+      "result": "PASS"
+    },
+    {
+      "name": "홈 안전 안내 지속",
+      "result": "PASS"
+    },
+    {
+      "name": "홈 바로 운동 시작 유도하지 않음",
+      "result": "PASS"
+    },
+    {
+      "name": "계획 중단 기록은 별도 표기",
+      "result": "PASS"
+    },
+    {
+      "name": "내 기록에 중단 기록 보존",
+      "result": "PASS"
+    },
+    {
+      "name": "정상 완료+중단 기록 => 1/3",
+      "result": "PASS"
+    },
+    {
+      "name": "정상 완료+중단 기록 => 주간 1/5",
+      "result": "PASS"
+    },
+    {
+      "name": "브라우저 실행 오류 없음",
+      "result": "PASS"
+    }
+  ]
+}
