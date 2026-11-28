@@ -40,6 +40,9 @@ const timeLabel=d=>{const x=new Date(d),now=new Date();if(sameDay(x,now))return 
 const SYMPTOM_LABEL={tingling:'다리 저림',back:'허리 불편감',none:'특이사항 없음'};
 const symptomText=s=>(s&&s.length?s.map(k=>SYMPTOM_LABEL[k]||k).join(', '):'증상 미선택');
 const workoutSummary=r=>r?.exercise==='walking'&&Number.isInteger(r.durationMinutes)&&r.durationMinutes>0?`${r.durationMinutes}분 걷기`:`${r?.sets??0}세트 × ${r?.reps??0}회`;
+// 집계 기준: 중단 기록은 기록 목록에는 남기되 정상 수행 완료에는 포함하지 않습니다.
+// 이전 버전 기록에는 stoppedEarly 속성이 없으므로 완료로 간주합니다.
+const isCompletedWorkout=r=>Boolean(r)&&r.stoppedEarly!==true;
 const detailSymptoms=r=>[r?.symptomLocation&&LOCATION_NAMES[r.symptomLocation],r?.triggerAction&&ACTION_NAMES[r.triggerAction],r?.stoppedEarly?'운동 중단':null].filter(Boolean).join(' · ');
 const loadJSON=(k,fallback)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v??fallback}catch{return fallback}};
 const saveJSON=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch{alert('브라우저 저장 공간에 저장하지 못했습니다.');return false}};

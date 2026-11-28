@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node tests/completion-counts.test.cjs",
+    "test:ui": "python tests/completion-browser.test.py"
   },
   "keywords": [],
   "author": "",

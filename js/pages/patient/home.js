@@ -1,29 +1,34 @@
 // 화면: 홈
 function home(){
- const p=planLoad(),r=records(),start=weekStart(),me=patient(DEMO_PATIENT_ID);
+ const p=planLoad(),r=records(),completed=r.filter(isCompletedWorkout),start=weekStart(),me=patient(DEMO_PATIENT_ID);
  const rx=rxFor(DEMO_PATIENT_ID);
- const doneToday=id=>r.some(x=>x.exercise===id&&sameDay(x.date,new Date()));
+ const doneToday=id=>completed.some(x=>x.exercise===id&&sameDay(x.date,new Date()));
  const doneCount=rx.filter(x=>doneToday(x.id)).length;
  const next=rx.find(x=>!doneToday(x.id))||rx[0];
- const weekRecs=r.filter(x=>new Date(x.date)>=start);
+ const weekRecs=completed.filter(x=>new Date(x.date)>=start);
  const goal=rx.length?Math.max(...rx.map(x=>x.perWeek)):p.goal;
  const days=new Set(weekRecs.map(x=>new Date(x.date).toDateString())).size;
  const pct=Math.min(100,Math.round(days/goal*100));
  const last=r[0],prev=r[1];
- let streak=0;for(let i=0;i<60;i++){const d=new Date();d.setDate(d.getDate()-i);if(r.some(x=>sameDay(x.date,d)))streak++;else if(i>0)break}
+ let streak=0;for(let i=0;i<60;i++){const d=new Date();d.setDate(d.getDate()-i);if(completed.some(x=>sameDay(x.date,d)))streak++;else if(i>0)break}
  const hour=new Date().getHours();
  const hello=hour<12?'좋은 아침이에요,':hour<18?'좋은 오후예요,':'좋은 저녁이에요,';
  const msg=!r.length?'첫 운동을 기록해 보세요.':days>=goal?'이번 주 목표를 달성했어요! 🎉':`목표까지 ${goal-days}회 남았어요.`;
  const monday=new Date(start);
- const dots=[0,1,2,3,4,5,6].map(i=>{const d=new Date(monday);d.setDate(d.getDate()+i);const done=r.some(x=>sameDay(x.date,d));const today=sameDay(d,new Date());return `<span class="day ${done?'done':''} ${today?'today':''}">${done?icon('check'):WEEKDAYS[d.getDay()]}</span>`}).join('');
+ const dots=[0,1,2,3,4,5,6].map(i=>{const d=new Date(monday);d.setDate(d.getDate()+i);const done=completed.some(x=>sameDay(x.date,d));const today=sameDay(d,new Date());return `<span class="day ${done?'done':''} ${today?'today':''}">${done?icon('check'):WEEKDAYS[d.getDay()]}</span>`}).join('');
  const lastDoc=[...thread(DEMO_PATIENT_ID).msgs].reverse().find(m=>m.from==='doctor');
+ // 오늘 기록한 중단·증상 악화는 홈으로 돌아와도 안내를 유지합니다.
+ const reviewToday=r.some(x=>sameDay(x.date,new Date())&&needsSafetyNotice(x));
+ const stoppedToday=r.filter(x=>sameDay(x.date,new Date())&&x.stoppedEarly===true).length;
  return `<section class="greet"><p class="hero-hi">${hello}</p><h1>${esc(me.name)}님</h1><p class="hero-sub">오늘도 천천히 시작해요.</p></section>
 
  <section class="card today">
   <div class="flex between"><div><p class="eyebrow">오늘의 운동</p><h2 style="margin:2px 0 6px">의료진 처방 운동</h2></div>${rx.length?`<span class="count-pill">${doneCount} / ${rx.length} 완료</span>`:''}</div>
   ${rx.length?rx.map(x=>{const e=ex(x.id),d=doneToday(x.id);return `<button class="rx-row ${d?'done':''}" onclick="go('detail','${x.id}')"><span class="round-check">${d?icon('check'):''}</span><span class="grow"><b>${esc(e.name.replace(/ \(.*\)/,''))}</b><small>${x.reps}회 × ${x.sets}세트 · ${esc(e.cat.split(' · ').pop())}</small></span>${icon('chevron','muted')}</button>`}).join(''):'<p class="sub">아직 처방받은 운동이 없어요. 담당 의료진이 운동을 처방하면 여기에 표시돼요.</p>'}
-  ${rx.length?`<button class="btn" onclick="go('detail','${next.id}')">${icon('play')} 오늘 운동 시작하기</button>`:`<button class="btn" onclick="go('purpose')">운동 찾아보기</button>`}
+  ${rx.length?(reviewToday?`<button class="btn alt" onclick="go('history')">${icon('clipboard')} 오늘의 증상 기록 확인하기</button>`:doneCount===rx.length?`<button class="btn alt" onclick="go('history')">오늘 처방 운동 모두 완료 · 기록 보기</button>`:`<button class="btn" onclick="go('detail','${next.id}')">${icon('play')} 오늘 운동 시작하기</button>`):`<button class="btn" onclick="go('purpose')">운동 찾아보기</button>`}
  </section>
+
+ ${reviewToday?`<section class="card safety-feedback" role="status"><b>${icon('alert')} 오늘의 증상 기록을 확인해 주세요</b><p>통증 변화, 저림 또는 운동 중단 기록이 있습니다. 추가 운동을 시작하기 전에 담당 의료진의 안내를 확인해 주세요.</p>${stoppedToday?`<p class="tiny">운동 중단 ${stoppedToday}건은 완료 수와 주간 수행률에 포함되지 않습니다.</p>`:''}<button class="btn alt" onclick="go('discGuide')">운동 중단 기준 및 응급 신호 확인</button></section>`:''}
 
  <section class="card week-card" onclick="go('plan')" style="cursor:pointer"><div class="ring" style="--p:${pct}"><b>${pct}%</b><small>달성</small></div><div class="grow"><p class="eyebrow">이번 주 운동</p><h3>${days}/${goal}회 완료했어요</h3><p class="sub">${msg}</p><div class="days">${dots}</div></div></section>
 

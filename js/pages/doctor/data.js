@@ -12,5 +12,5 @@ function patientCard(p){
 }
 function weekDots(logs){
  const monday=weekStart();
- return [0,1,2,3,4,5,6].map(i=>{const d=new Date(monday);d.setDate(d.getDate()+i);const done=logs.some(x=>sameDay(x.date,d));const today=sameDay(d,new Date());const future=d>new Date()&&!today;return `<div class="wd"><small>${WEEKDAYS[d.getDay()]}</small><span class="day ${done?'done':''} ${today?'today':''}">${done?icon('check'):d.getDate()}</span><small class="muted">${done?'완료':today?'오늘':future?'-':'미완료'}</small></div>`}).join('');
+ return [0,1,2,3,4,5,6].map(i=>{const d=new Date(monday);d.setDate(d.getDate()+i);const done=logs.some(x=>sameDay(x.date,d)&&isCompletedWorkout(x));const halted=!done&&logs.some(x=>sameDay(x.date,d)&&x.stoppedEarly===true);const today=sameDay(d,new Date());const future=d>new Date()&&!today;return `<div class="wd"><small>${WEEKDAYS[d.getDay()]}</small><span class="day ${done?'done':halted?'halted':''} ${today?'today':''}">${done?icon('check'):d.getDate()}</span><small class="${halted?'warn-txt':'muted'}">${done?'완료':halted?'중단':today?'오늘':future?'-':'미완료'}</small></div>`}).join('');
 }
