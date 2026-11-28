@@ -91,6 +91,7 @@ async function enterApp(){
   window.fcIsDoctor=await fcAuth.isDoctor();
   if(!window.fcIsDoctor){
    try{await fcAuth.signOut()}catch(e){console.error(e)}
+   authMode='signin';
    authMsg='이 계정에는 의료진 권한이 없어요. 관리자에게 의료진(DOCTOR) 그룹 등록을 요청하거나 환자로 로그인해 주세요.';
    return;
   }
