@@ -11,6 +11,10 @@ const schema = a.schema({
       painAfter: a.integer().required(),
       symptoms: a.string().array(),
       memo: a.string(),
+      durationMinutes: a.integer(),
+      symptomLocation: a.string(),
+      triggerAction: a.string(),
+      stoppedEarly: a.boolean(),
       recordedAt: a.datetime().required(),
       owner: a.string().authorization((allow) => [allow.owner().to(['read', 'delete'])]),
     })

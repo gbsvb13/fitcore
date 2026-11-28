@@ -86,6 +86,16 @@ async function resendCode(){if(!authReady())return;try{await fcAuth.resendCode(a
 
 async function enterApp(){
  authPw='';
+ // 의료진 화면은 Cognito DOCTOR 그룹 계정만 사용할 수 있다 (로컬 시연 모드에는 fcAuth가 없어 건너뜀).
+ if(authRole==='doctor'&&window.fcAuth?.isDoctor){
+  window.fcIsDoctor=await fcAuth.isDoctor();
+  if(!window.fcIsDoctor){
+   try{await fcAuth.signOut()}catch(e){console.error(e)}
+   authMode='signin';
+   authMsg='이 계정에는 의료진 권한이 없어요. 관리자에게 의료진(DOCTOR) 그룹 등록을 요청하거나 환자로 로그인해 주세요.';
+   return;
+  }
+ }
  try{await window.fcData?.load()}catch(e){console.error(e);alert('기록을 불러오지 못했어요.')}
  try{localStorage.setItem(ROLE_KEY,authRole)}catch{}
  document.body.classList.remove('auth');

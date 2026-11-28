@@ -21,11 +21,11 @@ function rxToggle(id){
  rxSyncInputs();
  rxDraft.ids=rxDraft.ids.includes(id)?rxDraft.ids.filter(x=>x!==id):[...rxDraft.ids,id];render();
 }
-function rxSyncInputs(){const n=id=>parseInt($('#'+id)?.value,10);if($('#rx-sets')){rxDraft.sets=n('rx-sets')||rxDraft.sets;rxDraft.reps=n('rx-reps')||rxDraft.reps;rxDraft.week=n('rx-week')||rxDraft.week}}
+function rxSyncInputs(){const n=id=>Number($('#'+id)?.value);if($('#rx-sets')){rxDraft.sets=n('rx-sets');rxDraft.reps=n('rx-reps');rxDraft.week=n('rx-week')}}
 function rxSaveDraft(){
  rxSyncInputs();
  const {sets,reps,week}=rxDraft;
- if(!(sets>0&&reps>0&&week>0&&week<=7)){alert('세트·횟수·주간 빈도를 확인해 주세요.');return}
+ if(![[sets,1,10],[reps,1,50],[week,1,7]].every(([n,min,max])=>Number.isInteger(n)&&n>=min&&n<=max)){alert('세트는 1~10, 횟수는 1~50, 주간 빈도는 1~7 사이의 정수로 입력해 주세요.');return}
  const all=rxLoad(),old=all[selectedPatient]||[];
  all[selectedPatient]=rxDraft.ids.map(id=>{const prev=old.find(r=>r.id===id);return {id,sets,reps,perWeek:week,note:rxDraft.note.trim()||prev?.note||'',date:stamp()}});
  if(rxSave(all)){rxDraft={ids:[],filter:'all'};go('doctorPatient')}

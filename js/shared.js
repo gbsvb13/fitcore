@@ -39,6 +39,8 @@ const dayLabel=d=>{const x=new Date(d);return `${fmt(x)} · ${sameDay(x,new Date
 const timeLabel=d=>{const x=new Date(d),now=new Date();if(sameDay(x,now))return x.toLocaleTimeString('ko-KR',{hour:'numeric',minute:'2-digit'});const y=new Date();y.setDate(y.getDate()-1);if(sameDay(x,y))return '어제';return fmt(x)};
 const SYMPTOM_LABEL={tingling:'다리 저림',back:'허리 불편감',none:'특이사항 없음'};
 const symptomText=s=>(s&&s.length?s.map(k=>SYMPTOM_LABEL[k]||k).join(', '):'증상 미선택');
+const workoutSummary=r=>r?.exercise==='walking'&&Number.isInteger(r.durationMinutes)&&r.durationMinutes>0?`${r.durationMinutes}분 걷기`:`${r?.sets??0}세트 × ${r?.reps??0}회`;
+const detailSymptoms=r=>[r?.symptomLocation&&LOCATION_NAMES[r.symptomLocation],r?.triggerAction&&ACTION_NAMES[r.triggerAction],r?.stoppedEarly?'운동 중단':null].filter(Boolean).join(' · ');
 const loadJSON=(k,fallback)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v??fallback}catch{return fallback}};
 const saveJSON=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch{alert('브라우저 저장 공간에 저장하지 못했습니다.');return false}};
 

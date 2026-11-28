@@ -8,7 +8,7 @@ function exerciseHistoryCard(id){
  const recent=all.slice(0,4);
  return `<section class="card"><div class="flex between"><h2 style="margin:0">이전 운동 기록</h2><span class="pill">${all.length}회</span></div>
  <p class="tiny muted">운동별 전후 통증과 증상 기록. 안전성이나 치료 효과를 판정하지 않습니다.</p>
- ${recent.length?recent.map(r=>`<div class="hist-row"><div><small class="muted">${fmt(r.date)}</small><b>${r.sets}세트 × ${r.reps}회</b></div><div><small class="muted">통증 변화</small><b class="teal">${r.before} → ${r.after}</b></div><span class="status ${r.symptoms?.includes('tingling')?'st-red':'st-green'}">${r.symptoms?.includes('tingling')?'저림 기록':'완료'}</span></div>`).join(''):'<p class="sub">아직 이 운동의 기록이 없습니다.</p>'}
+ ${recent.length?recent.map(r=>`<div class="hist-row"><div><small class="muted">${fmt(r.date)}</small><b>${esc(workoutSummary(r))}</b></div><div><small class="muted">통증 변화</small><b class="teal">${r.before} → ${r.after}</b></div><span class="status ${r.symptoms?.includes('tingling')?'st-red':'st-green'}">${r.symptoms?.includes('tingling')?'저림 기록':'완료'}</span></div>`).join(''):'<p class="sub">아직 이 운동의 기록이 없습니다.</p>'}
  ${all.length>4?`<p class="tiny">최근 4개 기록만 표시</p>`:''}</section>`;
 }
 
