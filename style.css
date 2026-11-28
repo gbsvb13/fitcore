@@ -412,3 +412,13 @@ body.has-head .main{padding-top:0}
 .nav-badge{top:4px}
 .main{padding-bottom:120px}
 @media (min-width:1024px){body.doctor-mode .doc-nav{border-radius:0;width:248px;bottom:0;padding:22px 16px;box-shadow:none;border-right:1px solid var(--line)}body.doctor-mode .doc-nav button{border-radius:12px}}
+/* Cycle 3 개선: NRS 명시 선택과 증상 기록 */
+.nrs-options{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:10px 0 7px}
+.nrs-option{background:#fff;border:1px solid #cddbd8;border-radius:8px;min-height:42px;font:700 14px system-ui,sans-serif;color:#355b54;cursor:pointer}
+.nrs-option.on,.nrs-option[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}
+.nrs-option:focus-visible{outline:3px solid #e0913b;outline-offset:2px}
+.stop-check{display:flex;gap:9px;align-items:center;margin-top:16px;padding:12px;border:1px solid #e7d7ca;border-radius:9px;background:#fff8f2;font-size:13px;line-height:1.5}
+.stop-check input{width:auto;flex-shrink:0}
+.safety-feedback{border:2px solid #e8a36b;background:#fff7ed}
+.safety-feedback>b{color:#813e1c;display:flex;align-items:center;gap:7px}
+.safety-feedback .recorded-symptoms{color:#813e1c;font-weight:750;background:#fff;padding:9px;border-radius:7px}

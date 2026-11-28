@@ -24,9 +24,9 @@ const KEY = 'fitcore-demo-records-v1';
 let synced = new Map();
 
 const toApp = (m) => ({ id: m.id, date: m.recordedAt, exercise: m.exerciseId, sets: m.sets, reps: m.reps,
-  before: m.painBefore, after: m.painAfter, symptoms: m.symptoms || [], memo: m.memo || '' });
+  before: m.painBefore, after: m.painAfter, symptoms: m.symptoms || [], memo: m.memo || '', durationMinutes: m.durationMinutes ?? null, symptomLocation: m.symptomLocation || '', triggerAction: m.triggerAction || '', stoppedEarly: m.stoppedEarly || false });
 const toCloud = (r) => ({ id: r.id, exerciseId: r.exercise, sets: r.sets, reps: r.reps,
-  painBefore: r.before, painAfter: r.after, symptoms: r.symptoms || [], memo: r.memo || '', recordedAt: r.date });
+  painBefore: r.before, painAfter: r.after, symptoms: r.symptoms || [], memo: r.memo || '', durationMinutes: r.durationMinutes ?? null, symptomLocation: r.symptomLocation || '', triggerAction: r.triggerAction || '', stoppedEarly: r.stoppedEarly || false, recordedAt: r.date });
 const same = (a, b) => JSON.stringify(toCloud(a)) === JSON.stringify(toCloud(b));
 
 async function listAll() {

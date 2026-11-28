@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FITCORE Cycle 3 | 로컬 시연 모드</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <script>
+    // 이 파일에 한정된 가상 데이터 시연 모드. 실제 인증/클라우드 저장을 수행하지 않습니다.
+    const demoRole = new URLSearchParams(location.search).get('role');
+    if (demoRole === 'doctor' || demoRole === 'patient') localStorage.setItem('fitcore-role', demoRole);
+    else if (!localStorage.getItem('fitcore-role')) localStorage.setItem('fitcore-role', 'patient');
+  </script>
+  <div style="max-width:430px;margin:0 auto;background:#fff0d7;color:#69431c;padding:8px 14px;font-size:12px;line-height:1.5;text-align:center">로컬 시연 모드 · AWS 로그인/동기화 비활성화 · 가상 데이터만 사용</div>
+  <div class="phone">
+    <header class="top">
+      <div class="logo"><b>✚</b>FitCore<span id="page-title" class="page-title"></span></div>
+      <div class="top-actions">
+        <button class="iconbtn" title="프로토타입 정보" onclick="alert('FITCORE 과제용 시연 프로토타입입니다. 이 페이지는 UX 테스트용이며 Cognito 인증과 AWS 동기화가 비활성화되어 있습니다. 데이터는 이 브라우저에만 저장됩니다.')">ⓘ</button>
+      </div>
+    </header>
+
+    <main id="app" class="main"></main>
+
+    <nav class="nav">
+      <button data-go="home"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg><span>홈</span></button>
+      <button data-go="purpose"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>운동 찾기</span></button>
+      <button data-go="history"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16v-5"/><path d="M12 16V8"/><path d="M17 16v-3"/></svg><span>내 기록</span></button>
+      <button data-go="me"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.5"/><path d="M19.5 21a7.5 7.5 0 0 0-15 0"/></svg><span>내 정보</span></button>
+    </nav>
+
+    <nav class="nav doc-nav">
+      <div class="side-brand"><b>✚</b><div><strong>FitCore</strong><small>바른 움직임, 건강한 일상</small></div></div>
+      <button data-go="doctor"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg><span>홈</span></button>
+      <button data-go="doctorPatients"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M16 3.5a4 4 0 0 1 0 8"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M18 14.5a6.5 6.5 0 0 1 4 6.5"/></svg><span>환자</span></button>
+      <button data-go="doctorPrescribe"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 10h6"/><path d="M9 14h6"/><path d="M9 18h3"/></svg><span>처방</span></button>
+      <button data-go="doctorMessages"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8"/><path d="M8 12h5"/></svg><span>메시지</span><i class="nav-badge" id="doc-msg-badge" hidden></i></button>
+      <button data-go="doctorMe"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.5"/><path d="M19.5 21a7.5 7.5 0 0 0-15 0"/></svg><span>내 정보</span></button>
+    </nav>
+  </div>
+
+  <!-- 순서 중요: 데이터 → 공통 기능 → 환자 화면 → 의료진 화면 → 시작 -->
+  <script src="js/data.js"></script>
+  <script src="js/media.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/pages/patient/home.js"></script>
+  <script src="js/pages/patient/guide.js"></script>
+  <script src="js/pages/patient/plan.js"></script>
+  <script src="js/pages/patient/purpose.js"></script>
+  <script src="js/pages/patient/gym.js"></script>
+  <script src="js/pages/patient/detail.js"></script>
+  <script src="js/pages/patient/record.js"></script>
+  <script src="js/pages/patient/history.js"></script>
+  <script src="js/pages/patient/me.js"></script>
+  <script src="js/pages/doctor/data.js"></script>
+  <script src="js/pages/doctor/home.js"></script>
+  <script src="js/pages/doctor/patients.js"></script>
+  <script src="js/pages/doctor/patient.js"></script>
+  <script src="js/pages/doctor/prescribe.js"></script>
+  <script src="js/pages/doctor/messages.js"></script>
+  <script src="js/pages/doctor/me.js"></script>
+  <script src="js/pages/doctor/views.js"></script>
+  <script src="js/pages/login.js"></script>
+  <script src="js/main.js"></script>
+  <!-- AWS 연동을 비활성화한 로컬 UX 테스트용 페이지 -->
+</body>
+</html>
